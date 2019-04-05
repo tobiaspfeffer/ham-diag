@@ -12,8 +12,6 @@
 #include <map>
 #include <algorithm>
 
-# define sXY
-
 /// Stochastic Series Expansion for the Spin 1/2 Hamiltonian
 /// H = \sum_{<i,j>}[ J_{i,j}/2 * ( S_i^+ S_j^- + S_i^- S_j^+) + V_{i,j} S_i^Z S_j^Z ]- \sum_{i} h_i S_i^Z
 /// with arbitrary J_{i,j} and h_i
@@ -189,19 +187,23 @@ public:
     {
       std::vector<double> J_loc = {Jx,Jy};
       J_bonds.resize(Lx*Ly*Lz,J_loc);
-#ifdef sXY
-      std::ifstream in("./qc_obs/t_hop_b");
+      h_sites.resize(Lx*Ly*Lz,0);
+      
+      std::ifstream in_t("./qc_obs/t_hop_b");
+      std::ifstream in_h("./qc_obs/h_sites");
+      
       for(size_t i=0; i<J_bonds.size(); i++)
       {
-        in >> J_loc[0] >> J_loc[1];
+        in_t >> J_loc[0] >> J_loc[1];
         J_bonds[i] = J_loc;
+        in_h >> h_sites[i];
       }
-#endif
+      in_t.close();
+      in_h.close();
       Delta_bonds.resize(Lx*Ly,std::vector<double>(2,Delta));
       for(size_t i=0; i<Delta_bonds.size(); i++)
         Delta_bonds[i][0] = Delta;
     }
-    h_sites.resize(Lx*Ly*Lz,0);
     
     for(int z=0; z<Lz; z++)
     {
